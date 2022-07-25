@@ -20,8 +20,8 @@
 #include "DataFormats/L1TMuon/interface/RegionalMuonCandFwd.h"
 #include "DataFormats/Math/interface/deltaR.h"
 #include "DataFormats/Math/interface/deltaPhi.h"
-#include "DataFormats/L1TrackTrigger/interface/L1TkMuonParticle.h"
-#include "DataFormats/L1TrackTrigger/interface/L1TkMuonParticleFwd.h"
+//#include "DataFormats/L1TrackTrigger/interface/L1TkMuonParticle.h"
+//#include "DataFormats/L1TrackTrigger/interface/L1TkMuonParticleFwd.h"
 
 // system include files
 #include <memory>
