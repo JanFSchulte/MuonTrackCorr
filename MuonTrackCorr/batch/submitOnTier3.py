@@ -89,11 +89,10 @@ tarLFN       = cmsswWorkDir + '/' + tarName
 # cmsRunExec   = 'ntuplizer.py' # python to run
 
 cmsRunInto   = 'MuonTrackCorr/MuonTrackCorr/test' # where to run cmsRun, relative from CMSSW/src
-# cmsRunExec   = 'analyze_TDR_MC.py' # python to run
+#cmsRunExec   = 'analyze_TDR_MC.py' # python to run
 cmsRunExec = args.cmsruncfg
 
 print '** INFO: will execute', cmsRunExec
-
 ##############################
 ##### Tar the folder if needed
 
@@ -128,8 +127,8 @@ else:
 ##############################
 ##### Prepare file lists
 
-xroootdServ     = 'root://cmsxrootd.fnal.gov/'
-tarEOSdestLFN   = 'root://cmseos.fnal.gov//store/user/lcadamur/CMSSW_tar/'+ tarName
+xroootdServ     = '' #'root://cmsxrootd.fnal.gov/'
+tarEOSdestLFN   = 'root://cmseos.fnal.gov//store/group/l1upgrades/L1Tau3Mu/'+ tarName
 
 if not args.xrdcptaronly:
 
@@ -155,8 +154,8 @@ if not args.xrdcptaronly:
     print "** INFO: preparing jobs in:", jobsDir
     os.system('mkdir ' + jobsDir)
 
-    baseEOSout            = 'root://cmseos.fnal.gov//store/user/lcadamur/L1MuTrks_ntuples/%s' % tag
-    # filelistEOSdestLFNdir = 'root://cmseos.fnal.gov//store/user/lcadamur/CMSSW_tar/'+ tarName
+    baseEOSout            = 'root://cmseos.fnal.gov//store/group/l1upgrades/L1Tau3Mu/%s' % tag
+    # filelistEOSdestLFNdir = 'root://cmseos.fnal.gov//store/user/guerrero/CMSSW_tar/'+ tarName
 
     outListNameBareProto   = 'filelist_{0}.txt'
     outScriptNameBareProto = 'job_{0}.sh'
