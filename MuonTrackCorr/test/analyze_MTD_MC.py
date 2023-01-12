@@ -29,7 +29,7 @@ process.load('Configuration.StandardSequences.FrontierConditions_GlobalTag_cff')
 from Configuration.AlCa.GlobalTag import GlobalTag
 #process.GlobalTag = GlobalTag(process.GlobalTag, 'auto:upgradePLS3', '')
 process.GlobalTag = GlobalTag(process.GlobalTag, '103X_upgrade2023_realistic_v2', '')
-print process.GlobalTag.globaltag
+print (process.GlobalTag.globaltag)
 # process.GlobalTag = GlobalTag(process.GlobalTag, '100X_upgrade2023_realistic_v1', '')
 # process.GlobalTag = GlobalTag(process.GlobalTag, '90X_upgrade2023_realistic_v9', '')
 
@@ -86,7 +86,9 @@ else:
     # '/store/mc/PhaseIITDRSpring19DR/TauTo3Mu_TuneCP5_14TeV-pythia8/GEN-SIM-DIGI-RAW/NoPU_106X_upgrade2023_realistic_v3-v2/50000/13BBBA96-8DCD-184C-8B25-98EC57A1EC63.root',
     ### single mu for test
     # 'file:/uscms/home/lcadamur/nobackup/EDM_MuGun_Pu0_TDR_MC/7F4AF09D-D268-C74E-B06C-259D965857BE.root',
-    '/store/relval/CMSSW_10_4_0_mtd5/RelValTauTo3Mu_14TeV_Eta3/GEN-SIM-DIGI-RAW/PU25ns_103X_upgrade2023_realistic_v2_2023D35PU200_ext10-v1/10000/011A1CAE-4EEC-804C-B06C-04B43CBE46CD.root',
+    #'/store/relval/CMSSW_10_4_0_mtd5/RelValTauTo3Mu_14TeV_Eta3/GEN-SIM-DIGI-RAW/PU25ns_103X_upgrade2023_realistic_v2_2023D35PU200_ext10-v1/10000/011A1CAE-4EEC-804C-B06C-04B43CBE46CD.root',
+    #'/store/user/jschulte/DSTau3Mu_pCut1_14TeV_Pythia8/PhaseIIMTDTDRAutumn18DR-PU200_103X_upgrade2023_realistic_v2_GEN-SIM-DIGI-RAW-v1/220919_161726/0000/DsTau3Mu-GEN-SIM-DIGI-RAW_10.root',
+    'file:../../../DsTau3Mu-GEN-SIM-DIGI-RAW.root',
     ### PU 200 TDR MC is the file below
     # '/store/mc/PhaseIITDRSpring19DR/Nu_E10-pythia8-gun/GEN-SIM-DIGI-RAW/PU200_106X_upgrade2023_realistic_v3-v3/70000/C1172908-191D-FF4E-B003-5B3574292AEA.root'
     # '/store/mc/PhaseIITDRSpring19DR/Mu_FlatPt2to100-pythia8-gun/GEN-SIM-DIGI-RAW/PU300_106X_upgrade2023_realistic_v3_ext1-v2/270000/A30C2FA1-EE84-494E-8314-77B22222DCFF.root',
