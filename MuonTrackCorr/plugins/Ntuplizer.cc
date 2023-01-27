@@ -1,8 +1,7 @@
 #ifndef NTUPLIZER_H
 #define NTUPLIZER_H
 
-#include "FWCore/Framework/interface/stream/EDAnalyzer.h"
-//#include "FWCore/Framework/interface/EDAnalyzer.h"
+#include "FWCore/Framework/interface/one/EDAnalyzer.h"
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
 #include "FWCore/Framework/interface/Frameworkfwd.h"
 #include "FWCore/Framework/interface/Event.h"
@@ -46,7 +45,7 @@ public:
   enum subsystem_type{kDT,kCSC,kRPC,kGEM,kME0,kNSubsystems};
 };
 
-class Ntuplizer : public edm::stream::EDAnalyzer<> {
+class Ntuplizer : public edm::one::EDAnalyzer<edm::one::SharedResources> {
     public:
 
         typedef TTTrack< Ref_Phase2TrackerDigi_ >  L1TTTrackType;
@@ -72,7 +71,7 @@ class Ntuplizer : public edm::stream::EDAnalyzer<> {
         const edm::EDGetTokenT< std::vector< TTTrack< Ref_Phase2TrackerDigi_ > > > trackToken;
         const edm::EDGetTokenT< std::vector< reco::GenParticle > > genPartToken;
         const edm::EDGetTokenT< TrackerMuonCollection > tkMuToken;
-        const edm::EDGetTokenT< MuonStubCollection > tkMuStubToken;
+        //const edm::EDGetTokenT< MuonStubCollection > tkMuStubToken;
         const edm::EDGetTokenT< RegionalMuonCandBxCollection > muBarrelToken;
         const edm::EDGetTokenT< RegionalMuonCandBxCollection > muOvrlapToken;
 //        const edm::EDGetTokenT< TTTrackAssociationMap< Ref_Phase2TrackerDigi_ > > trackTruthToken;
@@ -164,7 +163,7 @@ class Ntuplizer : public edm::stream::EDAnalyzer<> {
         // std::vector<float> L1_TkMu_e_;
         // std::vector<int> L1_TkMu_charge_;
 
-        unsigned int n_L1_TkMuStub_;
+    /*    unsigned int n_L1_TkMuStub_;
         std::vector<float> L1_TkMuStub_pt_;
         std::vector<float> L1_TkMuStub_eta_;
         std::vector<float> L1_TkMuStub_phi_;
@@ -179,7 +178,7 @@ class Ntuplizer : public edm::stream::EDAnalyzer<> {
         std::vector<float> L1_TkMuStub_gen_TP_eta_;
         std::vector<float> L1_TkMuStub_gen_TP_phi_;
         std::vector<float> L1_TkMuStub_gen_TP_m_;
-
+*/
         unsigned int n_gen_mu_;
         std::vector<float> gen_mu_pt_;
         std::vector<float> gen_mu_eta_;
@@ -293,21 +292,6 @@ void Ntuplizer::initialize()
     L1_TkMu_gen_TP_phi_.clear();
     L1_TkMu_gen_TP_m_.clear();
 
-    n_L1_TkMuStub_ = 0;
-    L1_TkMuStub_pt_.clear();
-    L1_TkMuStub_eta_.clear();
-    L1_TkMuStub_phi_.clear();
-    L1_TkMuStub_charge_.clear();
-    L1_TkMuStub_p_.clear();
-    L1_TkMuStub_z_.clear();
-    L1_TkMuStub_chi2_.clear();
-    L1_TkMuStub_nstubs_.clear();
-    L1_TkMuStub_gen_qual_.clear();
-    L1_TkMuStub_gen_TP_ID_.clear();
-    L1_TkMuStub_gen_TP_pt_.clear();
-    L1_TkMuStub_gen_TP_eta_.clear();
-    L1_TkMuStub_gen_TP_phi_.clear();
-    L1_TkMuStub_gen_TP_m_.clear();
 
     n_gen_mu_   = 0;
     gen_mu_pt_.clear();
@@ -363,7 +347,7 @@ Ntuplizer::Ntuplizer(const edm::ParameterSet& iConfig):
     trackToken      (consumes< L1TTTrackCollectionType >                  (iConfig.getParameter<edm::InputTag>("L1TrackInputTag"))),
     genPartToken    (consumes< GenParticleCollection >                    (iConfig.getParameter<edm::InputTag>("GenParticleInputTag"))),
     tkMuToken       (consumes< TrackerMuonCollection >               (iConfig.getParameter<edm::InputTag>("TkMuInputTag"))),
-    tkMuStubToken   (consumes< MuonStubCollection >               (iConfig.getParameter<edm::InputTag>("TkMuStubInputTag"))),
+    //tkMuStubToken   (consumes< MuonStubCollection >               (iConfig.getParameter<edm::InputTag>("TkMuStubInputTag"))),
     muBarrelToken   (consumes< RegionalMuonCandBxCollection >             (iConfig.getParameter<edm::InputTag>("L1BarrelMuonInputTag"))),
     muOvrlapToken   (consumes< RegionalMuonCandBxCollection >             (iConfig.getParameter<edm::InputTag>("L1OverlapMuonInputTag")))
 //    trackTruthToken (consumes< TTTrackAssociationMap< Ref_Phase2TrackerDigi_ > >  (iConfig.getParameter<edm::InputTag>("L1TrackTruthInputTag")))
@@ -451,22 +435,6 @@ void Ntuplizer::beginJob()
     tree_->Branch("L1_TkMu_gen_TP_phi", &L1_TkMu_gen_TP_phi_);
     tree_->Branch("L1_TkMu_gen_TP_m", &L1_TkMu_gen_TP_m_);
 
-    tree_->Branch("n_L1_TkMuStub", &n_L1_TkMuStub_);
-    tree_->Branch("L1_TkMuStub_pt", &L1_TkMuStub_pt_);
-    tree_->Branch("L1_TkMuStub_eta", &L1_TkMuStub_eta_);
-    tree_->Branch("L1_TkMuStub_phi", &L1_TkMuStub_phi_);
-    tree_->Branch("L1_TkMuStub_charge", &L1_TkMuStub_charge_);
-    tree_->Branch("L1_TkMuStub_p", &L1_TkMuStub_p_);
-    tree_->Branch("L1_TkMuStub_z", &L1_TkMuStub_z_);
-    tree_->Branch("L1_TkMuStub_chi2", &L1_TkMuStub_chi2_);
-    tree_->Branch("L1_TkMuStub_nstubs", &L1_TkMuStub_nstubs_);
-    tree_->Branch("L1_TkMuStub_gen_qual", &L1_TkMuStub_gen_qual_);
-    tree_->Branch("L1_TkMuStub_gen_TP_ID", &L1_TkMuStub_gen_TP_ID_);
-    tree_->Branch("L1_TkMuStub_gen_TP_pt", &L1_TkMuStub_gen_TP_pt_);
-    tree_->Branch("L1_TkMuStub_gen_TP_eta", &L1_TkMuStub_gen_TP_eta_);
-    tree_->Branch("L1_TkMuStub_gen_TP_phi", &L1_TkMuStub_gen_TP_phi_);
-    tree_->Branch("L1_TkMuStub_gen_TP_m", &L1_TkMuStub_gen_TP_m_);
-
     tree_->Branch("n_gen_mu", &n_gen_mu_);
     tree_->Branch("gen_mu_pt", &gen_mu_pt_);
     tree_->Branch("gen_mu_eta", &gen_mu_eta_);
@@ -516,6 +484,7 @@ void Ntuplizer::beginJob()
         tree_->Branch("gen_tau_e", &gen_tau_e_);
         tree_->Branch("gen_tau_charge", &gen_tau_charge_);   
     }
+  
 }
 
 void Ntuplizer::beginRun(edm::Run const& iRun, edm::EventSetup const& iSetup)
@@ -682,9 +651,9 @@ void Ntuplizer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
     iEvent.getByToken(tkMuToken, tkmuH);
     const TrackerMuonCollection& tkmus = (*tkmuH.product());
 
-    edm::Handle<MuonStubCollection> tkmustubH;
-    iEvent.getByToken(tkMuStubToken, tkmustubH);
-    const MuonStubCollection& tkmustubs = (*tkmustubH.product());
+    //edm::Handle<MuonStubCollection> tkmustubH;
+    //iEvent.getByToken(tkMuStubToken, tkmustubH);
+    //const MuonStubCollection& tkmustubs = (*tkmustubH.product());
 
     // ------------------------------------------------------
 
@@ -1028,10 +997,10 @@ void Ntuplizer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
     }
 
     /// trk + stubs
-    for (const auto& tkmustub : tkmustubs)
+/*    for (const auto& tkmustub : tkmustubs)
     {
         ++n_L1_TkMuStub_;
-/*        L1_TkMuStub_pt_  . push_back(tkmustub.pt());
+        L1_TkMuStub_pt_  . push_back(tkmustub.pt());
         L1_TkMuStub_eta_ . push_back(tkmustub.eta());
         L1_TkMuStub_phi_ . push_back(tkmustub.phi());
 
@@ -1086,10 +1055,10 @@ void Ntuplizer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
         L1_TkMuStub_gen_TP_eta_ . push_back (gen_TP_eta);
         L1_TkMuStub_gen_TP_phi_ . push_back (gen_TP_phi);
         L1_TkMuStub_gen_TP_m_   . push_back (gen_TP_m);
-*/
+
 
     }
-
+*/
     /// hits
     for (const auto& hit : l1muhits)
     {
