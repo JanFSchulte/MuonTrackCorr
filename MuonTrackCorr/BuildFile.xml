@@ -1,0 +1,21 @@
+<use name="CommonTools/UtilAlgos"/>
+<use name="CondFormats/AlignmentRecord"/>
+<use name="FWCore/Framework"/>
+<use name="FWCore/ParameterSet"/>
+<use name="DataFormats/HepMCCandidate"/>
+<use name="DataFormats/L1TMuon"/>
+<use name="DataFormats/L1TMuonPhase2"/>
+<use name="DataFormats/MuonReco"/>
+<use name="L1Trigger/L1TMuon"/>
+<use name="L1Trigger/L1TMuonEndCapPhase2"/>
+<use name="MuonAnalysis/MuonAssociators"/>
+<use name="SimDataFormats/PileupSummaryInfo"/>
+<use name="SimDataFormats/TrackingAnalysis"/>
+<use name="SimTracker/TrackTriggerAssociation"/>
+<use name="TrackingTools/GeomPropagators"/>
+<use name="TrackingTools/TrajectoryState"/>
+<use name="TrackingTools/Records"/>
+<use name="HepMC"/>
+<export>
+  <lib name="1"/>
+</export>

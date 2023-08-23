@@ -1,6 +1,7 @@
 #ifndef NTUPLIZER_H
 #define NTUPLIZER_H
 
+#include "FWCore/Framework/interface/ConsumesCollector.h"
 #include "FWCore/Framework/interface/one/EDAnalyzer.h"
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
 #include "FWCore/Framework/interface/Frameworkfwd.h"
@@ -34,6 +35,9 @@
 #include "SimTracker/TrackTriggerAssociation/interface/TTTrackAssociationMap.h"
 
 #include "TTree.h"
+#include "L1Trigger/L1TMuonEndCapPhase2/interface/EMTFTypes.h"
+
+#include "MuonTrackCorr/MuonTrackCorr/interface/SubsystemMCTruth.h"
 
 using namespace edm;
 using namespace l1t;
@@ -66,16 +70,18 @@ class Ntuplizer : public edm::one::EDAnalyzer<edm::one::SharedResources> {
 
         // const edm::EDGetTokenT< MuonBxCollection > muTokenPos;
         // const edm::EDGetTokenT< MuonBxCollection > muTokenNeg;
-        const edm::EDGetTokenT< EMTFTrackCollection > muToken;
-        const edm::EDGetTokenT< EMTFHitCollection >   mu_hitToken;
+        const edm::EDGetTokenT< l1t::phase2::EMTFTrackCollection > muToken;
+        const edm::EDGetTokenT< l1t::phase2::EMTFHitCollection >   mu_hitToken;
         const edm::EDGetTokenT< std::vector< TTTrack< Ref_Phase2TrackerDigi_ > > > trackToken;
         const edm::EDGetTokenT< std::vector< reco::GenParticle > > genPartToken;
-        const edm::EDGetTokenT< TrackerMuonCollection > tkMuToken;
-        //const edm::EDGetTokenT< MuonStubCollection > tkMuStubToken;
-        const edm::EDGetTokenT< RegionalMuonCandBxCollection > muBarrelToken;
-        const edm::EDGetTokenT< RegionalMuonCandBxCollection > muOvrlapToken;
-//        const edm::EDGetTokenT< TTTrackAssociationMap< Ref_Phase2TrackerDigi_ > > trackTruthToken;
+        const edm::EDGetTokenT< l1t::TrackerMuonCollection > tkMuToken;
+        const edm::EDGetTokenT< MuonStubCollection > tkMuStubToken;
+        const edm::EDGetTokenT< l1t::RegionalMuonCandBxCollection > muBarrelToken;
+        const edm::EDGetTokenT< l1t::RegionalMuonCandBxCollection > muOvrlapToken;
+        const edm::EDGetTokenT< TTTrackAssociationMap< Ref_Phase2TrackerDigi_ > > trackTruthToken;
 
+        edm::EDGetTokenT<TrackingParticleCollection> trk_part_token_;
+        SubsystemMCTruth subsystem_mc_truth_;
 
         const static int nTrkPars = 4; // number of parameters in the trk fit -- eventually to be made configurable
 
@@ -91,20 +97,12 @@ class Ntuplizer : public edm::one::EDAnalyzer<edm::one::SharedResources> {
 
         unsigned int n_EMTF_mu_;
         std::vector<float> EMTF_mu_pt_;
-        std::vector<float> EMTF_mu_pt_xml_;
         std::vector<float> EMTF_mu_eta_;
-        std::vector<float> EMTF_mu_theta_;
         std::vector<float> EMTF_mu_phi_;
         std::vector<int>   EMTF_mu_charge_;
-        std::vector<int>   EMTF_mu_mode_;
         std::vector<int>   EMTF_mu_endcap_;
         std::vector<int>   EMTF_mu_sector_;
         std::vector<int>   EMTF_mu_bx_;
-        std::vector<int>   EMTF_mu_hitref1_;
-        std::vector<int>   EMTF_mu_hitref2_;
-        std::vector<int>   EMTF_mu_hitref3_;
-        std::vector<int>   EMTF_mu_hitref4_;
-        // std::vector<float> EMTF_mu_e_;
 
         unsigned int n_barrel_mu_;
         std::vector<float> barrel_mu_pt_;
@@ -119,12 +117,6 @@ class Ntuplizer : public edm::one::EDAnalyzer<edm::one::SharedResources> {
         std::vector<float> ovrlap_mu_phi_;
         std::vector<int>   ovrlap_mu_charge_;
         std::vector<int>   ovrlap_mu_qual_;
-
-        // hits of a EMTF track
-        // std::vector<int>   EMTF_mu_h1_type_;
-        // std::vector<int>   EMTF_mu_h2_type_;
-        // std::vector<int>   EMTF_mu_h3_type_;
-        // std::vector<int>   EMTF_mu_h4_type_;
 
         unsigned int n_L1TT_trk_;
         std::vector<float> L1TT_trk_pt_;
@@ -160,25 +152,11 @@ class Ntuplizer : public edm::one::EDAnalyzer<edm::one::SharedResources> {
         std::vector<float> L1_TkMu_gen_TP_m_;
 
 
-        // std::vector<float> L1_TkMu_e_;
-        // std::vector<int> L1_TkMu_charge_;
 
-    /*    unsigned int n_L1_TkMuStub_;
-        std::vector<float> L1_TkMuStub_pt_;
+        unsigned int n_L1_TkMuStub_;
         std::vector<float> L1_TkMuStub_eta_;
         std::vector<float> L1_TkMuStub_phi_;
-        std::vector<int>   L1_TkMuStub_charge_;
-        std::vector<float> L1_TkMuStub_p_;
-        std::vector<float> L1_TkMuStub_z_;
-        std::vector<float> L1_TkMuStub_chi2_;
-        std::vector<int>   L1_TkMuStub_nstubs_;
-        std::vector<int>   L1_TkMuStub_gen_qual_;
-        std::vector<int>   L1_TkMuStub_gen_TP_ID_;
-        std::vector<float> L1_TkMuStub_gen_TP_pt_;
-        std::vector<float> L1_TkMuStub_gen_TP_eta_;
-        std::vector<float> L1_TkMuStub_gen_TP_phi_;
-        std::vector<float> L1_TkMuStub_gen_TP_m_;
-*/
+        
         unsigned int n_gen_mu_;
         std::vector<float> gen_mu_pt_;
         std::vector<float> gen_mu_eta_;
@@ -207,7 +185,7 @@ class Ntuplizer : public edm::one::EDAnalyzer<edm::one::SharedResources> {
         std::vector<int16_t>  mu_hit_bx_;
         std::vector<int16_t>  mu_hit_type_;  // subsystem: DT=0,CSC=1,RPC=2,GEM=3
         std::vector<int16_t>  mu_hit_neighbor_;
-        //
+
         std::vector<int16_t>  mu_hit_strip_;
         std::vector<int16_t>  mu_hit_wire_;
         std::vector<int16_t>  mu_hit_roll_;
@@ -218,31 +196,19 @@ class Ntuplizer : public edm::one::EDAnalyzer<edm::one::SharedResources> {
         std::vector<int16_t>  mu_hit_fr_;
         std::vector<int32_t>  mu_hit_emtf_phi_;
         std::vector<int32_t>  mu_hit_emtf_theta_;
-        //
-        std::vector<float  >  mu_hit_sim_phi_;
-        std::vector<float  >  mu_hit_sim_theta_;
-        std::vector<float  >  mu_hit_sim_eta_;
-        std::vector<float  >  mu_hit_sim_r_; // seems not there in the CMSSW emulator data format
-        std::vector<float  >  mu_hit_sim_z_; // seems not there in the CMSSW emulator data format
+        std::vector<int16_t>  mu_hit_truth_;
 };
 
 void Ntuplizer::initialize()
 {
     n_EMTF_mu_  = 0;
     EMTF_mu_pt_.clear();
-    EMTF_mu_pt_xml_.clear();
     EMTF_mu_eta_.clear();
-    EMTF_mu_theta_.clear();
     EMTF_mu_phi_.clear();
     EMTF_mu_charge_.clear();
-    EMTF_mu_mode_.clear();
     EMTF_mu_endcap_.clear();
     EMTF_mu_sector_.clear();
     EMTF_mu_bx_.clear();
-    EMTF_mu_hitref1_.clear();
-    EMTF_mu_hitref2_.clear();
-    EMTF_mu_hitref3_.clear();
-    EMTF_mu_hitref4_.clear();
 
     n_barrel_mu_ = 0;
     barrel_mu_pt_.clear();
@@ -330,28 +296,24 @@ void Ntuplizer::initialize()
     mu_hit_fr_.clear();
     mu_hit_emtf_phi_.clear();
     mu_hit_emtf_theta_.clear();
-    //
-    mu_hit_sim_phi_.clear();
-    mu_hit_sim_theta_.clear();
-    mu_hit_sim_eta_.clear();
-    mu_hit_sim_r_.clear();
-    mu_hit_sim_z_.clear();
+    mu_hit_truth_.clear();
 
 }
 
 Ntuplizer::Ntuplizer(const edm::ParameterSet& iConfig):
     // muTokenPos(consumes< MuonBxCollection >           (iConfig.getParameter<edm::InputTag>("L1MuonPosInputTag"))),
     // muTokenNeg(consumes< MuonBxCollection >           (iConfig.getParameter<edm::InputTag>("L1MuonNegInputTag"))),
-    muToken         (consumes< EMTFTrackCollection >                      (iConfig.getParameter<edm::InputTag>("L1MuonEMTFInputTag"))),
-    mu_hitToken     (consumes< EMTFHitCollection >                        (iConfig.getParameter<edm::InputTag>("L1EMTFHitInputTag"))),
+    muToken         (consumes< l1t::phase2::EMTFTrackCollection >                      (iConfig.getParameter<edm::InputTag>("L1MuonEMTFInputTag"))),
+    mu_hitToken     (consumes< l1t::phase2::EMTFHitCollection >                        (iConfig.getParameter<edm::InputTag>("L1EMTFHitInputTag"))),
     trackToken      (consumes< L1TTTrackCollectionType >                  (iConfig.getParameter<edm::InputTag>("L1TrackInputTag"))),
     genPartToken    (consumes< GenParticleCollection >                    (iConfig.getParameter<edm::InputTag>("GenParticleInputTag"))),
     tkMuToken       (consumes< TrackerMuonCollection >               (iConfig.getParameter<edm::InputTag>("TkMuInputTag"))),
-    //tkMuStubToken   (consumes< MuonStubCollection >               (iConfig.getParameter<edm::InputTag>("TkMuStubInputTag"))),
+    tkMuStubToken   (consumes< MuonStubCollection >               (iConfig.getParameter<edm::InputTag>("TkMuStubInputTag"))),
     muBarrelToken   (consumes< RegionalMuonCandBxCollection >             (iConfig.getParameter<edm::InputTag>("L1BarrelMuonInputTag"))),
-    muOvrlapToken   (consumes< RegionalMuonCandBxCollection >             (iConfig.getParameter<edm::InputTag>("L1OverlapMuonInputTag")))
-//    trackTruthToken (consumes< TTTrackAssociationMap< Ref_Phase2TrackerDigi_ > >  (iConfig.getParameter<edm::InputTag>("L1TrackTruthInputTag")))
-
+    muOvrlapToken   (consumes< RegionalMuonCandBxCollection >             (iConfig.getParameter<edm::InputTag>("L1OverlapMuonInputTag"))),
+    trackTruthToken (consumes< TTTrackAssociationMap< Ref_Phase2TrackerDigi_ > >  (iConfig.getParameter<edm::InputTag>("L1TrackTruthInputTag"))),
+    trk_part_token_(consumes<TrackingParticleCollection>(iConfig.getParameter<edm::InputTag>("TrkPartTag"))),
+    subsystem_mc_truth_(iConfig, consumesCollector())
 {
     save_all_trks_    =  iConfig.getParameter<bool>("save_all_L1TTT");
     prompt_mu_only_   =  iConfig.getParameter<bool>("prompt_mu_only");
@@ -370,20 +332,12 @@ void Ntuplizer::beginJob()
 
     tree_->Branch("n_EMTF_mu", &n_EMTF_mu_);
     tree_->Branch("EMTF_mu_pt", &EMTF_mu_pt_);
-    tree_->Branch("EMTF_mu_pt_xml", &EMTF_mu_pt_xml_);
     tree_->Branch("EMTF_mu_eta", &EMTF_mu_eta_);
-    tree_->Branch("EMTF_mu_theta", &EMTF_mu_theta_);
     tree_->Branch("EMTF_mu_phi", &EMTF_mu_phi_);
     tree_->Branch("EMTF_mu_charge", &EMTF_mu_charge_);
-    tree_->Branch("EMTF_mu_mode", &EMTF_mu_mode_);
     tree_->Branch("EMTF_mu_endcap", &EMTF_mu_endcap_);
     tree_->Branch("EMTF_mu_sector", &EMTF_mu_sector_);
     tree_->Branch("EMTF_mu_bx", &EMTF_mu_bx_);
-    tree_->Branch("EMTF_mu_hitref1", &EMTF_mu_hitref1_);
-    tree_->Branch("EMTF_mu_hitref2", &EMTF_mu_hitref2_);
-    tree_->Branch("EMTF_mu_hitref3", &EMTF_mu_hitref3_);
-    tree_->Branch("EMTF_mu_hitref4", &EMTF_mu_hitref4_);
-
 
     tree_->Branch("n_barrel_mu",      &n_barrel_mu_);
     tree_->Branch("barrel_mu_pt",     &barrel_mu_pt_);
@@ -467,12 +421,6 @@ void Ntuplizer::beginJob()
     tree_->Branch("mu_hit_fr", &mu_hit_fr_);
     tree_->Branch("mu_hit_emtf_phi", &mu_hit_emtf_phi_);
     tree_->Branch("mu_hit_emtf_theta", &mu_hit_emtf_theta_);
-    //
-    tree_->Branch("mu_hit_sim_phi", &mu_hit_sim_phi_);
-    tree_->Branch("mu_hit_sim_theta", &mu_hit_sim_theta_);
-    tree_->Branch("mu_hit_sim_eta", &mu_hit_sim_eta_);
-    tree_->Branch("mu_hit_sim_r", &mu_hit_sim_r_);
-    tree_->Branch("mu_hit_sim_z", &mu_hit_sim_z_);
 
     //
     if (save_tau_3mu_)
@@ -492,71 +440,13 @@ void Ntuplizer::beginRun(edm::Run const& iRun, edm::EventSetup const& iSetup)
 
 void Ntuplizer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 {
-    // --------- in-place function
-    // from https://github.com/jiafulow/L1TMuonSimulationsMar2017/blob/master/Analyzers/plugins/NtupleMaker.cc#L374
-    auto get_hit_refs = [](const auto& trk, const auto& hits) {
-        using namespace l1t;
 
-        std::vector<int32_t> hit_refs = {-1, -1, -1, -1};
-        EMTFHitCollection::const_iterator conv_hits_it1  = trk.Hits().begin();
-        EMTFHitCollection::const_iterator conv_hits_end1 = trk.Hits().end();
 
-        for (; conv_hits_it1 != conv_hits_end1; ++conv_hits_it1) {
-          EMTFHitCollection::const_iterator conv_hits_it2  = hits.begin();
-          EMTFHitCollection::const_iterator conv_hits_end2 = hits.end();
+    subsystem_mc_truth_.update(iEvent, iSetup);
 
-          for (; conv_hits_it2 != conv_hits_end2; ++conv_hits_it2) {
-            const EMTFHit& conv_hit_i = *conv_hits_it1;
-            const EMTFHit& conv_hit_j = *conv_hits_it2;
 
-            // See L1Trigger/L1TMuonEndCap/src/PrimitiveMatching.cc
-            // All these must match: [bx_history][station][chamber][segment]
-            if (
-              (conv_hit_i.Subsystem()  == conv_hit_j.Subsystem()) &&
-              (conv_hit_i.PC_station() == conv_hit_j.PC_station()) &&
-              (conv_hit_i.PC_chamber() == conv_hit_j.PC_chamber()) &&
-              (conv_hit_i.Ring()       == conv_hit_j.Ring()) &&  // because of ME1/1
-              (conv_hit_i.Strip()      == conv_hit_j.Strip()) &&
-              (conv_hit_i.Wire()       == conv_hit_j.Wire()) &&
-              (conv_hit_i.Pattern()    == conv_hit_j.Pattern()) &&
-              (conv_hit_i.BX()         == conv_hit_j.BX()) &&
-              (conv_hit_i.Strip_low()  == conv_hit_j.Strip_low()) && // For RPC clusters
-              (conv_hit_i.Strip_hi()   == conv_hit_j.Strip_hi()) &&  // For RPC clusters
-              (conv_hit_i.Roll()       == conv_hit_j.Roll()) &&
-              (conv_hit_i.Endcap()     == conv_hit_j.Endcap()) &&
-              (conv_hit_i.Sector()     == conv_hit_j.Sector()) &&
-              true
-            ) {
-              int istation = (conv_hit_i.Station() - 1);
-              auto hit_ref = std::distance(hits.begin(), conv_hits_it2);
-              hit_refs.at(istation) = hit_ref;
-            }  // end if
-          }  // end loop over hits
-        }  // end loop over trk.Hits()
-
-        // Sanity check
-        for (int istation = 0; istation < 4; ++istation) {
-          bool has_hit = trk.Mode() & (1 << (3 - istation));
-          assert(has_hit == (hit_refs.at(istation) != -1));
-        }
-
-        return hit_refs;
-    };
-
-    // helper functions by Jia Fu
-    // taken from https://github.com/jiafulow/L1TMuonSimulationsMar2017/blob/master/Analyzers/plugins/NtupleMaker.cc#L602
-    auto get_pattern = [](const auto& hit) {
-      int pattern = 0;
-      if (hit.Subsystem() == TriggerPrimitive::kCSC) {
-        pattern = hit.Pattern();
-      } else if (hit.Subsystem() == TriggerPrimitive::kDT) {
-        pattern = hit.Sync_err();  // syncErr was hacked to store rpc bit
-      }
-      return pattern;
-    };
-     
     auto get_time = [](const auto& hit) {
-      float time = hit.Time();
+      float time = hit.globTime();
       return static_cast<int>(std::round(time*16/25));  // integer unit is 25ns/16 (4-bit)
     };
 
@@ -597,7 +487,7 @@ void Ntuplizer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
     };
 
     auto isFront = [&](const auto& hit) {
-      return isFront_detail(hit.Subsystem(), hit.Station(), hit.Ring(), hit.Chamber(), (hit.Subsystem() == TriggerPrimitive::kRPC ? hit.Subsector_RPC() : hit.Subsector()));
+      return isFront_detail(hit.subsystem(), hit.station(), hit.ring(), hit.chamber(), hit.subsector());
     };
 
     // --------------------------------------------------------------
@@ -615,13 +505,13 @@ void Ntuplizer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
     // const MuonBxCollection& l1musNeg = (*l1musNegH.product());
 
     // the L1Muons objects - directly frtom EMTF
-    edm::Handle<EMTFTrackCollection> l1musH;
+    edm::Handle<l1t::phase2::EMTFTrackCollection> l1musH;
     iEvent.getByToken(muToken, l1musH);  
-    const EMTFTrackCollection& l1mus = (*l1musH.product());
+    const l1t::phase2::EMTFTrackCollection& l1mus = (*l1musH.product());
 
-    edm::Handle<EMTFHitCollection> l1muhitsH;
+    edm::Handle<l1t::phase2::EMTFHitCollection> l1muhitsH;
     iEvent.getByToken(mu_hitToken, l1muhitsH);  
-    const EMTFHitCollection& l1muhits = (*l1muhitsH.product());
+    const l1t::phase2::EMTFHitCollection& l1muhits = (*l1muhitsH.product());
 
 
     edm::Handle<RegionalMuonCandBxCollection> l1musBarrelH;
@@ -637,9 +527,9 @@ void Ntuplizer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
     iEvent.getByToken(trackToken, l1tksH);
     const L1TTTrackCollectionType& l1tks = (*l1tksH.product());
 
-//    edm::Handle<TTTrackAssociationMap< Ref_Phase2TrackerDigi_ > > l1tksTruthH;
-//    iEvent.getByToken(trackTruthToken, l1tksTruthH);
-//    const auto &l1tkstruth = (*l1tksTruthH.product());
+    edm::Handle<TTTrackAssociationMap< Ref_Phase2TrackerDigi_ > > l1tksTruthH;
+    iEvent.getByToken(trackTruthToken, l1tksTruthH);
+    const auto &l1tkstruth = (*l1tksTruthH.product());
 
     // the gen particles
     edm::Handle<GenParticleCollection> genpartH;
@@ -651,9 +541,9 @@ void Ntuplizer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
     iEvent.getByToken(tkMuToken, tkmuH);
     const TrackerMuonCollection& tkmus = (*tkmuH.product());
 
-    //edm::Handle<MuonStubCollection> tkmustubH;
-    //iEvent.getByToken(tkMuStubToken, tkmustubH);
-    //const MuonStubCollection& tkmustubs = (*tkmustubH.product());
+    edm::Handle<MuonStubCollection> tkmustubH;
+    iEvent.getByToken(tkMuStubToken, tkmustubH);
+    const MuonStubCollection& tkmustubs = (*tkmustubH.product());
 
     // ------------------------------------------------------
 
@@ -751,30 +641,9 @@ void Ntuplizer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
         }
     }
 
-    // // some debug!
-    // cout << "------ TAUS ------ " << endl;
-    // for (uint igentau = 0; igentau < gen_tau_pt_.size(); ++igentau)
-    // {
-    //     cout << igentau
-    //          << ") pt = " << gen_tau_pt_.at(igentau)
-    //          << " eta = " << gen_tau_eta_.at(igentau)
-    //          << " phi = " << gen_tau_phi_.at(igentau)
-    //          << endl;
-    // }
-    // cout << "------ MUONS ------ " << endl;
-    // for (uint igenmu = 0; igenmu < gen_mu_pt_.size(); ++igenmu)
-    // {
-    //     cout << igenmu
-    //          << ") pt = " << gen_mu_pt_.at(igenmu)
-    //          << " eta = " << gen_mu_eta_.at(igenmu)
-    //          << " phi = " << gen_mu_phi_.at(igenmu)
-    //          << " tau_idx = " << gen_mu_gentauidx_.at(igenmu)
-    //          << endl;
-    // }
 
+    n_L1TT_trk_ = l1tks.size();
 
-    // n_L1TT_trk_ = l1tks.size();
-/*
     const auto &truthmap = l1tkstruth.getTTTrackToTrackingParticleMap();
     for (auto l1trkit = l1tks.begin(); l1trkit != l1tks.end(); ++l1trkit)
     {
@@ -793,28 +662,6 @@ void Ntuplizer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
             L1TT_trk_nstubs_.push_back(l1trkit->getStubRefs().size());
 
             const edm::Ptr<L1TTTrackType> trkEdmPtr(l1tksH, itrk);
-
-            // NOTE: according to this ref: https://twiki.cern.ch/twiki/bin/viewauth/CMS/SLHCTrackerTriggerSWTools#TTTrack
-            // one track must be either genuine, combinatoric or unknown, but I saw in this sample:
-            // /store/mc/PhaseIITDRSpring19DR/Mu_FlatPt2to100-pythia8-gun/GEN-SIM-DIGI-RAW/PU300_106X_upgrade2023_realistic_v3_ext1-v2/270000/A30C2FA1-EE84-494E-8314-77B22222DCFF.root
-            // cases where all the three flags are 0
-            // so save this bitwise at the right index
-            // const edm::Ptr<L1TTTrackType> trkEdmPtr(l1tksH, itrk);
-            // int trkgenqual = -1;
-            // if (l1tkstruth.isGenuine(trkEdmPtr))
-            //     trkgenqual = 0;
-            // else if (l1tkstruth.isCombinatoric(trkEdmPtr))
-            //     trkgenqual = 1;
-            // else if (l1tkstruth.isUnknown(trkEdmPtr))
-            //     trkgenqual = 2;
-            //
-            // L1TT_trk_gen_qual_.push_back(trkgenqual);
-            //
-            // if (trkgenqual == -1){
-            //     cout << itrk << "isGenuine ? "      << l1tkstruth.isGenuine(trkEdmPtr)      << endl;
-            //     cout << itrk << "isCombinatoric ? " << l1tkstruth.isCombinatoric(trkEdmPtr) << endl;
-            //     cout << itrk << "isUnknown ? "      << l1tkstruth.isUnknown(trkEdmPtr)      << endl;
-            // }
 
             int trkgenqual = 0;
             if (l1tkstruth.isGenuine(trkEdmPtr))
@@ -854,51 +701,22 @@ void Ntuplizer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
             L1TT_trk_gen_TP_m_   . push_back (gen_TP_m);
 
         }
-        // cout << " --------------" << endl;
-
 
     }
-*/
-    // cout << l1tks.size() << " " << l1tkstruth.size() << endl;
-    // if (l1tks.size() != l1tkstruth.size() )
-    //     cout << "AAAAAARGH" << endl;
-
-    // for (auto l1muit = l1musPos.begin(0); l1muit != l1musPos.end(0); ++l1muit)
-    // {
-    //     ++n_EMTF_mu_;
-    // }
-
-    // for (auto l1muit = l1musNeg.begin(0); l1muit != l1musNeg.end(0); ++l1muit)
-    // {
-    //     ++n_EMTF_mu_;
-    // }
 
     for (auto l1muit = l1mus.begin(); l1muit != l1mus.end(); ++l1muit)
     {
-        const auto& hit_refs = get_hit_refs(*l1muit, l1muhits);
-        assert(hit_refs.size() == 4); // sanity check
 
-        if (l1muit->BX() != 0)
+        if (l1muit->bx() != 0)
             continue;
         ++n_EMTF_mu_;
-        EMTF_mu_pt_.push_back(l1muit->Pt());
-        EMTF_mu_pt_xml_.push_back(l1muit->Pt_XML());
-        EMTF_mu_eta_.push_back(l1muit->Eta());
-        EMTF_mu_theta_.push_back(l1muit->Theta());
-        EMTF_mu_phi_.push_back(l1muit->Phi_glob());
-        EMTF_mu_charge_.push_back(l1muit->Charge());
-        EMTF_mu_mode_.push_back(l1muit->Mode());
-        EMTF_mu_endcap_.push_back(l1muit->Endcap());
-        EMTF_mu_sector_.push_back(l1muit->Sector());
-        EMTF_mu_bx_.push_back(l1muit->BX());
-        // EMTF_mu_e_.push_back(l1muit->energy());
-        EMTF_mu_hitref1_.push_back(hit_refs.at(0));
-        EMTF_mu_hitref2_.push_back(hit_refs.at(1));
-        EMTF_mu_hitref3_.push_back(hit_refs.at(2));
-        EMTF_mu_hitref4_.push_back(hit_refs.at(3));
-
-        // if (l1mus.size() > 4)
-        // cout << "Number of hits in this track " << l1muit->Hits().size() << "  -- trk qual " << l1muit->Mode() << endl;
+        EMTF_mu_pt_.push_back(l1muit->emtfPt());
+        EMTF_mu_eta_.push_back(l1muit->modelEta());
+        EMTF_mu_phi_.push_back(l1muit->modelPhi());
+        EMTF_mu_charge_.push_back(l1muit->emtfQ());
+        EMTF_mu_endcap_.push_back(l1muit->endcap());
+        EMTF_mu_sector_.push_back(l1muit->sector());
+        EMTF_mu_bx_.push_back(l1muit->bx());
     }
 
     // barrel muons
@@ -951,89 +769,22 @@ void Ntuplizer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
         L1_TkMu_chi2_    . push_back(matchedTrk->chi2());
         L1_TkMu_nstubs_  . push_back(matchedTrk->getStubRefs().size());
 
-        //L1_TkMu_mudetID_ . push_back(tkmu.muonDetector());
 
-        // matched gen trk info
 
         int trkgenqual = 0;
-//        if (l1tkstruth.isGenuine(matchedTrk))
-//           trkgenqual |= (1 << 0);
+        if (l1tkstruth.isGenuine(matchedTrk))
+           trkgenqual |= (1 << 0);
 
-//        if (l1tkstruth.isCombinatoric(matchedTrk))
-//           trkgenqual |= (1 << 1);
+        if (l1tkstruth.isCombinatoric(matchedTrk))
+           trkgenqual |= (1 << 1);
 
-//        if (l1tkstruth.isUnknown(matchedTrk))
-//           trkgenqual |= (1 << 2);
+        if (l1tkstruth.isUnknown(matchedTrk))
+           trkgenqual |= (1 << 2);
 
         L1_TkMu_gen_qual_.push_back(trkgenqual);
 
 
-//        bool has_matched_trk = (truthmap.find(matchedTrk) != truthmap.end());
-        bool has_matched_trk = false;
-        int   gen_TP_ID   = -999;
-        float gen_TP_pt   = -999.; 
-        float gen_TP_eta  = -999.;  
-        float gen_TP_phi  = -999.;  
-        float gen_TP_m    = -999.; 
-        
-/*        if (has_matched_trk)
-        {
-            const auto matchedTP = truthmap.at(matchedTrk);
-            gen_TP_ID  = matchedTP->pdgId() ;
-            gen_TP_pt  = matchedTP->p4().pt() ;
-            gen_TP_eta = matchedTP->p4().eta() ;
-            gen_TP_phi = matchedTP->p4().phi() ;
-            gen_TP_m   = matchedTP->p4().mass() ;
-        }
-*/
-        L1_TkMu_gen_TP_ID_  . push_back (gen_TP_ID);
-        L1_TkMu_gen_TP_pt_  . push_back (gen_TP_pt);
-        L1_TkMu_gen_TP_eta_ . push_back (gen_TP_eta);
-        L1_TkMu_gen_TP_phi_ . push_back (gen_TP_phi);
-        L1_TkMu_gen_TP_m_   . push_back (gen_TP_m);
-
-        // this is true, verified
-        // cout << tkmu.pt() << " " << matchedTrk->getMomentum(nTrkPars).perp() << endl;
-    }
-
-    /// trk + stubs
-/*    for (const auto& tkmustub : tkmustubs)
-    {
-        ++n_L1_TkMuStub_;
-        L1_TkMuStub_pt_  . push_back(tkmustub.pt());
-        L1_TkMuStub_eta_ . push_back(tkmustub.eta());
-        L1_TkMuStub_phi_ . push_back(tkmustub.phi());
-
-        // get the associated track and get properties
-        // const edm::Ptr< L1TTTrackType >& getTrkPtr() const
-        auto matchedTrk =  tkmustub.trkPtr();
-        int l1tttq = (matchedTrk->rInv() > 0 ? 1 : -1);
-        L1_TkMuStub_charge_  . push_back(l1tttq);
-        L1_TkMuStub_p_       . push_back(matchedTrk->momentum().mag());
-        L1_TkMuStub_z_       . push_back(matchedTrk->POCA().z());
-        L1_TkMuStub_chi2_    . push_back(matchedTrk->chi2());
-        L1_TkMuStub_nstubs_  . push_back(matchedTrk->getStubRefs().size());
-
-        // this is true, verified
-        // cout << tkmustub.pt() << " " << matchedTrk->getMomentum(nTrkPars).perp() << endl;
-
-        // matched gen trk info
-
-        int trkgenqual = 0;
-\\        if (l1tkstruth.isGenuine(matchedTrk))
-\\           trkgenqual |= (1 << 0);
-
-\\        if (l1tkstruth.isCombinatoric(matchedTrk))
-\\           trkgenqual |= (1 << 1);
-
-\\        if (l1tkstruth.isUnknown(matchedTrk))
-\\           trkgenqual |= (1 << 2);
-
-        L1_TkMuStub_gen_qual_.push_back(trkgenqual);
-
-
         bool has_matched_trk = (truthmap.find(matchedTrk) != truthmap.end());
-
         int   gen_TP_ID   = -999;
         float gen_TP_pt   = -999.; 
         float gen_TP_eta  = -999.;  
@@ -1050,47 +801,105 @@ void Ntuplizer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
             gen_TP_m   = matchedTP->p4().mass() ;
         }
 
-        L1_TkMuStub_gen_TP_ID_  . push_back (gen_TP_ID);
-        L1_TkMuStub_gen_TP_pt_  . push_back (gen_TP_pt);
-        L1_TkMuStub_gen_TP_eta_ . push_back (gen_TP_eta);
-        L1_TkMuStub_gen_TP_phi_ . push_back (gen_TP_phi);
-        L1_TkMuStub_gen_TP_m_   . push_back (gen_TP_m);
-
+        L1_TkMu_gen_TP_ID_  . push_back (gen_TP_ID);
+        L1_TkMu_gen_TP_pt_  . push_back (gen_TP_pt);
+        L1_TkMu_gen_TP_eta_ . push_back (gen_TP_eta);
+        L1_TkMu_gen_TP_phi_ . push_back (gen_TP_phi);
+        L1_TkMu_gen_TP_m_   . push_back (gen_TP_m);
 
     }
-*/
+
+    /// trk + stubs
+    for (const auto& tkmustub : tkmustubs)
+    {
+        ++n_L1_TkMuStub_;
+        L1_TkMuStub_eta_ . push_back(tkmustub.eta1());
+        L1_TkMuStub_phi_ . push_back(tkmustub.coord1());
+
+    }
+
+
+    auto trk_part_col_handle = iEvent.getHandle(trk_part_token_);
+    auto trk_part_col        = trk_part_col_handle.product();
+
     /// hits
     for (const auto& hit : l1muhits)
     {
+        const auto [sim_tp1, sim_tp2] = subsystem_mc_truth_.findTrackingParticlesFromEMTFHit(hit);
         ++n_mu_hit_;
-        mu_hit_endcap_     . push_back(hit.Endcap());
-        mu_hit_station_    . push_back(hit.Station());
-        mu_hit_ring_       . push_back(hit.Ring());
-        mu_hit_sector_     . push_back(hit.PC_sector());
-        mu_hit_subsector_  . push_back(hit.Subsector());
-        mu_hit_chamber_    . push_back(hit.Chamber());
-        mu_hit_cscid_      . push_back(hit.CSC_ID());
-        mu_hit_bx_         . push_back(hit.BX());
-        mu_hit_type_       . push_back(hit.Subsystem());
-        mu_hit_neighbor_   . push_back(hit.Neighbor());
-        //
-        mu_hit_strip_      . push_back(hit.Strip());
-        mu_hit_wire_       . push_back(hit.Wire());
-        mu_hit_roll_       . push_back(hit.Roll());
-        mu_hit_quality_    . push_back(hit.Quality());
-        mu_hit_pattern_    . push_back(get_pattern(hit));  // modified
-        mu_hit_bend_       . push_back(hit.Bend());
-        std::cout << hit.Bend() << std::endl;
+        mu_hit_endcap_     . push_back(hit.endcap());
+        mu_hit_station_    . push_back(hit.station());
+        mu_hit_ring_       . push_back(hit.ring());
+        mu_hit_sector_     . push_back(hit.sector());
+        mu_hit_subsector_  . push_back(hit.subsector());
+        mu_hit_chamber_    . push_back(hit.chamber());
+        mu_hit_cscid_      . push_back(hit.cscId());
+        mu_hit_bx_         . push_back(hit.bx());
+        mu_hit_type_       . push_back(hit.subsystem());
+        mu_hit_neighbor_   . push_back(hit.flagNeighbor());
+        
+        mu_hit_strip_      . push_back(hit.strip());
+        mu_hit_wire_       . push_back(hit.wire1());
+        mu_hit_roll_       . push_back(hit.roll());
+        mu_hit_quality_    . push_back(hit.quality());
+        mu_hit_pattern_    . push_back(hit.pattern());
+        mu_hit_bend_       . push_back(hit.bend());
         mu_hit_time_       . push_back(get_time(hit));     // modified
         mu_hit_fr_         . push_back(isFront(hit));
-        mu_hit_emtf_phi_   . push_back(hit.Phi_fp());
-        mu_hit_emtf_theta_ . push_back(hit.Theta_fp());
-        //
-        mu_hit_sim_phi_    . push_back(hit.Phi_sim());
-        mu_hit_sim_theta_  . push_back(hit.Theta_sim());
-        mu_hit_sim_eta_    . push_back(hit.Eta_sim());
-        mu_hit_sim_r_      . push_back(hit.Rho_sim());
-        mu_hit_sim_z_      . push_back(hit.Z_sim());
+        mu_hit_emtf_phi_   . push_back(hit.emtfPhi());
+        mu_hit_emtf_theta_ . push_back(hit.emtfTheta1());
+
+        if (sim_tp1 >=0 and sim_tp2 < 0){
+           TrackingParticle tp = trk_part_col->at(sim_tp1);
+           TrackingParticle::genp_iterator j, b = tp.genParticle_begin(), e = tp.genParticle_end();
+           bool isMu = false;
+           bool isFromTau3Mu = false;
+           for (j = b; j != e; ++j) {
+               const reco::GenParticle *p = j->get();
+               if (abs(p -> pdgId()) == 13) isMu = true;
+               if (abs(p -> mother(0) -> pdgId()) == 15 && abs(p -> pdgId()) == 13) isFromTau3Mu = true;
+           }
+           if (isFromTau3Mu) mu_hit_truth_ . push_back(3);
+           else if (isMu) mu_hit_truth_ . push_back(2);
+           else mu_hit_truth_ . push_back(1);
+        }
+        else if (sim_tp1 < 0 and sim_tp2 >= 0){
+           TrackingParticle tp = trk_part_col->at(sim_tp2);
+           TrackingParticle::genp_iterator j, b = tp.genParticle_begin(), e = tp.genParticle_end();
+           bool isMu = false;
+           bool isFromTau3Mu = false;
+           for (j = b; j != e; ++j) {
+               const reco::GenParticle *p = j->get();
+               if (abs(p -> pdgId()) == 13) isMu = true;
+               if (abs(p -> mother(0) -> pdgId()) == 15 && abs(p -> pdgId()) == 13) isFromTau3Mu = true;
+           }
+           if (isFromTau3Mu) mu_hit_truth_ . push_back(3);
+           else if (isMu) mu_hit_truth_ . push_back(2);
+           else mu_hit_truth_ . push_back(1);
+        }
+        else if (sim_tp1 >=0 and sim_tp2 >=0){
+           TrackingParticle tp1 = trk_part_col->at(sim_tp1);
+           TrackingParticle tp2 = trk_part_col->at(sim_tp2);
+           TrackingParticle::genp_iterator j1, b1 = tp1.genParticle_begin(), e1 = tp1.genParticle_end();
+           TrackingParticle::genp_iterator j2, b2 = tp2.genParticle_begin(), e2 = tp2.genParticle_end();
+           bool isMu = false;
+           bool isFromTau3Mu = false;
+           for (j1 = b1; j1 != e1; ++j1) {
+               const reco::GenParticle *p = j1->get();
+               if (abs(p -> pdgId()) == 13) isMu = true;
+               if (abs(p -> mother(0) -> pdgId()) == 15 && abs(p -> pdgId()) == 13) isFromTau3Mu = true;
+           }
+           for (j2 = b2; j2 != e2; ++j2) {
+               const reco::GenParticle *p = j2->get();
+               if (abs(p -> pdgId()) == 13) isMu = true;
+               if (abs(p -> mother(0) -> pdgId()) == 15 && abs(p -> pdgId()) == 13) isFromTau3Mu = true;
+           }
+           if (isFromTau3Mu) mu_hit_truth_ . push_back(3);
+           else if (isMu) mu_hit_truth_ . push_back(2);
+           else mu_hit_truth_ . push_back(1);
+        }
+        else mu_hit_truth_ . push_back(0);
+
     }
 
     tree_->Fill();
