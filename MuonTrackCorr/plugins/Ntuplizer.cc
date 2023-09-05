@@ -1,6 +1,9 @@
 #ifndef NTUPLIZER_H
 #define NTUPLIZER_H
 
+
+#include <cmath>
+
 #include "FWCore/Framework/interface/ConsumesCollector.h"
 #include "FWCore/Framework/interface/one/EDAnalyzer.h"
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
@@ -135,9 +138,12 @@ class Ntuplizer : public edm::one::EDAnalyzer<edm::one::SharedResources> {
         std::vector<float> L1TT_trk_gen_TP_m_;
 
         unsigned int n_L1_TkMu_;
-        std::vector<float> L1_TkMu_pt_;
-        std::vector<float> L1_TkMu_eta_;
-        std::vector<float> L1_TkMu_phi_;
+        std::vector<float> L1_TkMu_gmt_pt_;
+        std::vector<float> L1_TkMu_gmt_eta_;
+        std::vector<float> L1_TkMu_gmt_phi_;
+        std::vector<int>   L1_TkMu_gmt_dz_;
+        std::vector<int>   L1_TkMu_gmt_dxy_;
+        std::vector<int>   L1_TkMu_gmt_charge_;
         std::vector<int>   L1_TkMu_charge_;
         std::vector<float> L1_TkMu_p_;
         std::vector<float> L1_TkMu_z_;
@@ -153,9 +159,20 @@ class Ntuplizer : public edm::one::EDAnalyzer<edm::one::SharedResources> {
 
 
 
-        unsigned int n_L1_TkMuStub_;
-        std::vector<float> L1_TkMuStub_eta_;
-        std::vector<float> L1_TkMuStub_phi_;
+        unsigned int n_L1_MuStub_;
+        std::vector<float> L1_MuStub_eta1_; 
+        std::vector<float> L1_MuStub_eta2_; 
+        std::vector<float> L1_MuStub_phi_; 
+        std::vector<float> L1_MuStub_phiBend_; // bending angle  only in barrel for now
+        std::vector<int> L1_MuStub_quality_; 
+        std::vector<int> L1_MuStub_etaQuality_; 
+        std::vector<int> L1_MuStub_id_; // stub id in case of more stubs per chamber
+        std::vector<int> L1_MuStub_bx_;
+        std::vector<int> L1_MuStub_etaRegion_; //In the barrel this is wheel. In the endcap it is 6-ring
+        std::vector<int> L1_MuStub_phiRegion_; //In the barrel it is sector. In the endcap it is chamber
+        std::vector<int> L1_MuStub_station_;
+        std::vector<int> L1_MuStub_tfLayer_;
+        std::vector<int> L1_MuStub_type_;
         
         unsigned int n_gen_mu_;
         std::vector<float> gen_mu_pt_;
@@ -196,7 +213,14 @@ class Ntuplizer : public edm::one::EDAnalyzer<edm::one::SharedResources> {
         std::vector<int16_t>  mu_hit_fr_;
         std::vector<int32_t>  mu_hit_emtf_phi_;
         std::vector<int32_t>  mu_hit_emtf_theta_;
-        std::vector<int16_t>  mu_hit_truth_;
+        std::vector<int32_t>  mu_hit_truth_;
+
+        std::vector<float>  mu_hit_global_phi_;
+        std::vector<float>  mu_hit_global_theta_;
+        std::vector<float>  mu_hit_global_eta_;
+        std::vector<float>  mu_hit_global_r_;
+        std::vector<float>  mu_hit_global_z_;
+        std::vector<float>  mu_hit_global_time_;
 };
 
 void Ntuplizer::initialize()
@@ -242,9 +266,12 @@ void Ntuplizer::initialize()
     L1TT_trk_gen_TP_m_.clear();
 
     n_L1_TkMu_ = 0;
-    L1_TkMu_pt_.clear();
-    L1_TkMu_eta_.clear();
-    L1_TkMu_phi_.clear();
+    L1_TkMu_gmt_pt_.clear();
+    L1_TkMu_gmt_eta_.clear();
+    L1_TkMu_gmt_phi_.clear();
+    L1_TkMu_gmt_dz_.clear();
+    L1_TkMu_gmt_dxy_.clear();
+    L1_TkMu_gmt_charge_.clear();
     L1_TkMu_charge_.clear();
     L1_TkMu_p_.clear();
     L1_TkMu_z_.clear();
@@ -257,6 +284,21 @@ void Ntuplizer::initialize()
     L1_TkMu_gen_TP_eta_.clear();
     L1_TkMu_gen_TP_phi_.clear();
     L1_TkMu_gen_TP_m_.clear();
+
+    n_L1_MuStub_ = 0;
+    L1_MuStub_eta1_.clear();
+    L1_MuStub_eta2_.clear();
+    L1_MuStub_phi_.clear();
+    L1_MuStub_phiBend_.clear();
+    L1_MuStub_quality_.clear();
+    L1_MuStub_etaQuality_.clear();
+    L1_MuStub_id_.clear();
+    L1_MuStub_bx_.clear();
+    L1_MuStub_etaRegion_.clear();
+    L1_MuStub_phiRegion_.clear();
+    L1_MuStub_station_.clear();
+    L1_MuStub_tfLayer_.clear();
+    L1_MuStub_type_.clear();
 
 
     n_gen_mu_   = 0;
@@ -298,6 +340,13 @@ void Ntuplizer::initialize()
     mu_hit_emtf_theta_.clear();
     mu_hit_truth_.clear();
 
+    mu_hit_global_phi_.clear();
+    mu_hit_global_theta_.clear();
+    mu_hit_global_eta_.clear();
+    mu_hit_global_r_.clear();
+    mu_hit_global_z_.clear();
+    mu_hit_global_time_.clear();
+
 }
 
 Ntuplizer::Ntuplizer(const edm::ParameterSet& iConfig):
@@ -308,7 +357,7 @@ Ntuplizer::Ntuplizer(const edm::ParameterSet& iConfig):
     trackToken      (consumes< L1TTTrackCollectionType >                  (iConfig.getParameter<edm::InputTag>("L1TrackInputTag"))),
     genPartToken    (consumes< GenParticleCollection >                    (iConfig.getParameter<edm::InputTag>("GenParticleInputTag"))),
     tkMuToken       (consumes< TrackerMuonCollection >               (iConfig.getParameter<edm::InputTag>("TkMuInputTag"))),
-    tkMuStubToken   (consumes< MuonStubCollection >               (iConfig.getParameter<edm::InputTag>("TkMuStubInputTag"))),
+    tkMuStubToken   (consumes< MuonStubCollection >               (iConfig.getParameter<edm::InputTag>("MuStubInputTag"))),
     muBarrelToken   (consumes< RegionalMuonCandBxCollection >             (iConfig.getParameter<edm::InputTag>("L1BarrelMuonInputTag"))),
     muOvrlapToken   (consumes< RegionalMuonCandBxCollection >             (iConfig.getParameter<edm::InputTag>("L1OverlapMuonInputTag"))),
     trackTruthToken (consumes< TTTrackAssociationMap< Ref_Phase2TrackerDigi_ > >  (iConfig.getParameter<edm::InputTag>("L1TrackTruthInputTag"))),
@@ -373,9 +422,12 @@ void Ntuplizer::beginJob()
 
     //
     tree_->Branch("n_L1_TkMu", &n_L1_TkMu_);
-    tree_->Branch("L1_TkMu_pt", &L1_TkMu_pt_);
-    tree_->Branch("L1_TkMu_eta", &L1_TkMu_eta_);
-    tree_->Branch("L1_TkMu_phi", &L1_TkMu_phi_);
+    tree_->Branch("L1_TkMu_gmt_pt", &L1_TkMu_gmt_pt_);
+    tree_->Branch("L1_TkMu_gmt_eta", &L1_TkMu_gmt_eta_);
+    tree_->Branch("L1_TkMu_gmt_phi", &L1_TkMu_gmt_phi_);
+    tree_->Branch("L1_TkMu_gmt_dxy", &L1_TkMu_gmt_dxy_);
+    tree_->Branch("L1_TkMu_gmt_dz", &L1_TkMu_gmt_dz_);
+    tree_->Branch("L1_TkMu_gmt_charge", &L1_TkMu_gmt_charge_);
     tree_->Branch("L1_TkMu_charge", &L1_TkMu_charge_);
     tree_->Branch("L1_TkMu_p", &L1_TkMu_p_);
     tree_->Branch("L1_TkMu_z", &L1_TkMu_z_);
@@ -388,6 +440,21 @@ void Ntuplizer::beginJob()
     tree_->Branch("L1_TkMu_gen_TP_eta", &L1_TkMu_gen_TP_eta_);
     tree_->Branch("L1_TkMu_gen_TP_phi", &L1_TkMu_gen_TP_phi_);
     tree_->Branch("L1_TkMu_gen_TP_m", &L1_TkMu_gen_TP_m_);
+
+    tree_->Branch("n_L1_MuStub", &n_L1_MuStub_);
+    tree_->Branch("L1_MuStub_eta1_", &L1_MuStub_eta1_);
+    tree_->Branch("L1_MuStub_eta2_", &L1_MuStub_eta2_);
+    tree_->Branch("L1_MuStub_phi_", &L1_MuStub_phi_);
+    tree_->Branch("L1_MuStub_phiBend_", &L1_MuStub_phiBend_);
+    tree_->Branch("L1_MuStub_quality_", &L1_MuStub_quality_);
+    tree_->Branch("L1_MuStub_etaQuality_", &L1_MuStub_etaQuality_);
+    tree_->Branch("L1_MuStub_id_", &L1_MuStub_id_);
+    tree_->Branch("L1_MuStub_bx_", &L1_MuStub_bx_);
+    tree_->Branch("L1_MuStub_etaRegion_", &L1_MuStub_etaRegion_);
+    tree_->Branch("L1_MuStub_phiRegion_", &L1_MuStub_phiRegion_);
+    tree_->Branch("L1_MuStub_station_", &L1_MuStub_station_);
+    tree_->Branch("L1_MuStub_tfLayer_", &L1_MuStub_tfLayer_);
+    tree_->Branch("L1_MuStub_type_", &L1_MuStub_type_);
 
     tree_->Branch("n_gen_mu", &n_gen_mu_);
     tree_->Branch("gen_mu_pt", &gen_mu_pt_);
@@ -409,6 +476,7 @@ void Ntuplizer::beginJob()
     tree_->Branch("mu_hit_cscid", &mu_hit_cscid_);
     tree_->Branch("mu_hit_bx", &mu_hit_bx_);
     tree_->Branch("mu_hit_type", &mu_hit_type_);
+    tree_->Branch("mu_hit_truth", &mu_hit_truth_);
     tree_->Branch("mu_hit_neighbor", &mu_hit_neighbor_);
     //
     tree_->Branch("mu_hit_strip", &mu_hit_strip_);
@@ -421,6 +489,13 @@ void Ntuplizer::beginJob()
     tree_->Branch("mu_hit_fr", &mu_hit_fr_);
     tree_->Branch("mu_hit_emtf_phi", &mu_hit_emtf_phi_);
     tree_->Branch("mu_hit_emtf_theta", &mu_hit_emtf_theta_);
+
+    tree_->Branch("mu_hit_global_phi", &mu_hit_global_phi_);
+    tree_->Branch("mu_hit_global_theta", &mu_hit_global_theta_);
+    tree_->Branch("mu_hit_global_eta", &mu_hit_global_eta_);
+    tree_->Branch("mu_hit_global_r", &mu_hit_global_r_);
+    tree_->Branch("mu_hit_global_z", &mu_hit_global_z_);
+    tree_->Branch("mu_hit_global_time", &mu_hit_global_time_);
 
     //
     if (save_tau_3mu_)
@@ -755,9 +830,12 @@ void Ntuplizer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
     for (const auto& tkmu : tkmus)
     {
         ++n_L1_TkMu_;
-        L1_TkMu_pt_  . push_back(tkmu.pt());
-        L1_TkMu_eta_ . push_back(tkmu.eta());
-        L1_TkMu_phi_ . push_back(tkmu.phi());
+        L1_TkMu_gmt_pt_  . push_back(tkmu.phPt());
+        L1_TkMu_gmt_eta_ . push_back(tkmu.phEta());
+        L1_TkMu_gmt_phi_ . push_back(tkmu.phPhi());
+        L1_TkMu_gmt_charge_ . push_back(tkmu.phCharge());
+        L1_TkMu_gmt_dz_ . push_back(tkmu.phZ0());
+        L1_TkMu_gmt_dxy_ . push_back(tkmu.phD0());
 
         // get the associated track and get properties
         // const edm::Ptr< L1TTTrackType >& getTrkPtr() const
@@ -768,7 +846,6 @@ void Ntuplizer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
         L1_TkMu_z_       . push_back(matchedTrk->POCA().z());
         L1_TkMu_chi2_    . push_back(matchedTrk->chi2());
         L1_TkMu_nstubs_  . push_back(matchedTrk->getStubRefs().size());
-
 
 
         int trkgenqual = 0;
@@ -812,9 +889,20 @@ void Ntuplizer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
     /// trk + stubs
     for (const auto& tkmustub : tkmustubs)
     {
-        ++n_L1_TkMuStub_;
-        L1_TkMuStub_eta_ . push_back(tkmustub.eta1());
-        L1_TkMuStub_phi_ . push_back(tkmustub.coord1());
+        ++n_L1_MuStub_;
+        L1_MuStub_eta1_ . push_back(tkmustub.offline_eta1());;
+        L1_MuStub_eta2_ . push_back(tkmustub.offline_eta2());;
+        L1_MuStub_phi_ . push_back(tkmustub.offline_coord1());;
+        L1_MuStub_phiBend_ . push_back(tkmustub.offline_coord2());;
+        L1_MuStub_quality_ . push_back(tkmustub.quality());;
+        L1_MuStub_etaQuality_ . push_back(tkmustub.etaQuality());;
+        L1_MuStub_id_ . push_back(tkmustub.id());;
+        L1_MuStub_bx_ . push_back(tkmustub.bxNum());;
+        L1_MuStub_etaRegion_ . push_back(tkmustub.etaRegion());;
+        L1_MuStub_phiRegion_ . push_back(tkmustub.phiRegion());;
+        L1_MuStub_station_ . push_back(tkmustub.depthRegion());;
+        L1_MuStub_tfLayer_ . push_back(tkmustub.tfLayer());;
+        L1_MuStub_type_ . push_back(tkmustub.type());;
 
     }
 
@@ -848,6 +936,13 @@ void Ntuplizer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
         mu_hit_fr_         . push_back(isFront(hit));
         mu_hit_emtf_phi_   . push_back(hit.emtfPhi());
         mu_hit_emtf_theta_ . push_back(hit.emtfTheta1());
+        
+        mu_hit_global_phi_ . push_back(hit.globPhi());
+        mu_hit_global_theta_ . push_back(hit.globTheta());
+        mu_hit_global_eta_ . push_back(-log(tan(hit.globTheta()*M_PI/(2*180))));
+        mu_hit_global_r_ . push_back(hit.globPerp());
+        mu_hit_global_z_ . push_back(hit.globZ());
+        mu_hit_global_time_ . push_back(hit.globTime());
 
         if (sim_tp1 >=0 and sim_tp2 < 0){
            TrackingParticle tp = trk_part_col->at(sim_tp1);

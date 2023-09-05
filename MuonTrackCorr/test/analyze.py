@@ -36,7 +36,8 @@ process.maxEvents = cms.untracked.PSet(
 process.source = cms.Source("PoolSource",
     fileNames = cms.untracked.vstring( (
 #      '/store/mc/Phase2Fall22DRMiniAOD/TT_TuneCP5_14TeV-powheg-pythia8/GEN-SIM-DIGI-RAW-MINIAOD/PU200_125X_mcRun4_realistic_v2_ext1-v1/30000/000c5e5f-78f7-44ee-95fe-7b2f2c2e2312.root'
-        'file:/depot/cms/users/schul105/Tau3Mu/production/CMSSW_12_5_2_patch1/src/DsTau3Mu-GEN-SIM-DIGI-RAW.root'
+        #'file:/depot/cms/users/schul105/Tau3Mu/production/CMSSW_12_5_2_patch1/src/DsTau3Mu-GEN-SIM-DIGI-RAW.root'
+        'file:../../../DsTau3Mu-GEN-SIM-DIGI_v2.root'
      ) ),
     secondaryFileNames = cms.untracked.vstring(),
                            # skipEvents=cms.untracked.uint32(58)
@@ -126,7 +127,7 @@ process.FEVTDEBUGHLToutput_step = cms.EndPath(process.FEVTDEBUGHLToutput)
 
 process.Ntuplizer = cms.EDAnalyzer("Ntuplizer",
     TkMuInputTag        = cms.InputTag("l1tTkMuonsGmt"),
-    TkMuStubInputTag        = cms.InputTag("l1tTkStubsGmt"),
+    MuStubInputTag        = cms.InputTag("l1tTkStubsGmt"),
     L1MuonEMTFInputTag  = cms.InputTag("simEmtfDigisPhase2"),
     L1EMTFHitInputTag   = cms.InputTag("simEmtfDigisPhase2"),
     L1TrackInputTag = cms.InputTag('l1tTTTracksFromTrackletEmulation', 'Level1TTTracks'),
