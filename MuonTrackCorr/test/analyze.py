@@ -16,6 +16,7 @@ process.load('FWCore.MessageService.MessageLogger_cfi')
 process.load('Configuration.EventContent.EventContent_cff')
 process.load('SimGeneral.MixingModule.mixNoPU_cfi')
 process.load('Configuration.Geometry.GeometryExtended2026D88Reco_cff')
+process.load('Configuration.Geometry.GeometryExtended2026D88_cff')
 process.load('Configuration.StandardSequences.MagneticField_cff')
 process.load('Configuration.StandardSequences.RawToDigi_Data_cff')
 process.load('IOMC.EventVertexGenerators.VtxSmearedHLLHC14TeV_cfi')
@@ -37,17 +38,16 @@ process.source = cms.Source("PoolSource",
     fileNames = cms.untracked.vstring( (
 #      '/store/mc/Phase2Fall22DRMiniAOD/TT_TuneCP5_14TeV-powheg-pythia8/GEN-SIM-DIGI-RAW-MINIAOD/PU200_125X_mcRun4_realistic_v2_ext1-v1/30000/000c5e5f-78f7-44ee-95fe-7b2f2c2e2312.root'
         #'file:/depot/cms/users/schul105/Tau3Mu/production/CMSSW_12_5_2_patch1/src/DsTau3Mu-GEN-SIM-DIGI-RAW.root'
-        'file:../../../DsTau3Mu-GEN-SIM-DIGI_v2.root'
+        'file:../../../Tau3Mu_GEN-SIM-DIGI-RAW_PU0.root'
+    #    '/store/user/jschulte/DSTau3Mu_pCut1_14TeV_Pythia8/Phase2Fall22DRMiniAOD-PU200_125X_mcRun4_realistic_v2_GEN-SIM-DIGI-RAW-v2/240115_165556/0000/DsTau3Mu-GEN-SIM-DIGI-RAW_PUValid_10.root'
      ) ),
     secondaryFileNames = cms.untracked.vstring(),
                            # skipEvents=cms.untracked.uint32(58)
 )
 
 process.options = cms.untracked.PSet(
-    FailPath = cms.untracked.vstring(),
     IgnoreCompletely = cms.untracked.vstring(),
     Rethrow = cms.untracked.vstring(),
-    SkipEvent = cms.untracked.vstring(),
     accelerators = cms.untracked.vstring('*'),
     allowUnscheduled = cms.obsolete.untracked.bool,
     canDeleteEarly = cms.untracked.vstring(),
@@ -98,27 +98,8 @@ process.FEVTDEBUGHLToutput = cms.OutputModule("PoolOutputModule",
 
 # Other statements
 from Configuration.AlCa.GlobalTag import GlobalTag
-process.GlobalTag = GlobalTag(process.GlobalTag, '125X_mcRun4_realistic_v2', '')
+process.GlobalTag = GlobalTag(process.GlobalTag, '131X_mcRun4_realistic_v5', '')
 
-##
-#Calibrate Digis
-process.load("L1Trigger.DTTriggerPhase2.CalibratedDigis_cfi")
-process.CalibratedDigis.dtDigiTag = "simMuonDTDigis" 
-process.CalibratedDigis.scenario = 0
-
-#DTTriggerPhase2
-process.load("L1Trigger.DTTriggerPhase2.dtTriggerPhase2PrimitiveDigis_cfi")
-process.dtTriggerPhase2PrimitiveDigis.debug = False
-process.dtTriggerPhase2PrimitiveDigis.dump = False
-process.dtTriggerPhase2PrimitiveDigis.scenario = 0
-
-process.load("L1Trigger.Phase2L1GMT.gmt_cff")
-process.l1tGMTMuons.trackMatching.verbose=cms.int32(1)
-process.l1tGMTMuons.trackConverter.verbose=cms.int32(1)
-process.l1tGMTMuons.verbose=0
-process.l1tGMTMuons.trackConverter.verbose=1
-
-# Path and EndPath definitions
 process.raw2digi_step = cms.Path(process.RawToDigi)
 process.L1TrackTrigger_step = cms.Path(process.L1TrackTrigger)
 process.L1simulation_step = cms.Path(process.SimL1Emulator)
@@ -175,6 +156,7 @@ associatePatAlgosToolsTask(process)
 # process.options.numberOfStreams = 0
 
 # customisation of the process.
+
 # Automatic addition of the customisation function from SimGeneral.MixingModule.customiseStoredTPConfig
 from SimGeneral.MixingModule.customiseStoredTPConfig import higherPtTP
 
@@ -182,33 +164,16 @@ from SimGeneral.MixingModule.customiseStoredTPConfig import higherPtTP
 process = higherPtTP(process)
 
 # Automatic addition of the customisation function from SLHCUpgradeSimulations.Configuration.aging
-from SLHCUpgradeSimulations.Configuration.aging import customise_aging_1000 
+from SLHCUpgradeSimulations.Configuration.aging import customise_aging_1000
 
 #call to customisation function customise_aging_1000 imported from SLHCUpgradeSimulations.Configuration.aging
 process = customise_aging_1000(process)
 
-# Automatic addition of the customisation function from Configuration.DataProcessing.Utils
-from Configuration.DataProcessing.Utils import addMonitoring 
+# Automatic addition of the customisation function from L1Trigger.Configuration.customisePhase2TTOn110
+from L1Trigger.Configuration.customisePhase2TTOn110 import customisePhase2TTOn110
 
-#call to customisation function addMonitoring imported from Configuration.DataProcessing.Utils
-process = addMonitoring(process)
-
-# Automatic addition of the customisation function from L1Trigger.Configuration.customisePhase2
-from L1Trigger.Configuration.customisePhase2 import addHcalTriggerPrimitives 
-
-#call to customisation function addHcalTriggerPrimitives imported from L1Trigger.Configuration.customisePhase2
-process = addHcalTriggerPrimitives(process)
-
-# Automatic addition of the customisation function from L1Trigger.Configuration.customisePhase2FEVTDEBUGHLT
-from L1Trigger.Configuration.customisePhase2FEVTDEBUGHLT import customisePhase2FEVTDEBUGHLT 
-
-#call to customisation function customisePhase2FEVTDEBUGHLT imported from L1Trigger.Configuration.customisePhase2FEVTDEBUGHLT
-process = customisePhase2FEVTDEBUGHLT(process)
-# Automatic addition of the customisation function from L1Trigger.Configuration.customisePhase2TTNoMC
-from L1Trigger.Configuration.customisePhase2TTNoMC import customisePhase2TTNoMC 
-
-#call to customisation function customisePhase2TTNoMC imported from L1Trigger.Configuration.customisePhase2TTNoMC
-process = customisePhase2TTNoMC(process)
+#call to customisation function customisePhase2TTOn110 imported from L1Trigger.Configuration.customisePhase2TTOn110
+process = customisePhase2TTOn110(process)
 
 # Automatic addition of the customisation function from L1Trigger.L1TMuonEndCapPhase2.config
 from L1Trigger.L1TMuonEndCapPhase2.config import customise_mc
@@ -216,32 +181,8 @@ from L1Trigger.L1TMuonEndCapPhase2.config import customise_mc
 #call to customisation function customise_mc imported from L1Trigger.L1TMuonEndCapPhase2.config
 process = customise_mc(process)
 
-# Automatic addition of the customisation function from EMTFTools.NtupleMaker.config
-#from EMTFTools.NtupleMaker.config import customise_ntuple
-
-#call to customisation function customise_ntuple imported from EMTFTools.NtupleMaker.config
-#process = customise_ntuple(process)
-
-
-
-### ME0 seems missing from Fall22 samples. 
-process.simEmtfDigisPhase2.ME0Enabled = cms.bool(False)
-#process.emtfToolsNtupleMaker.ME0SimHitEnabled = cms.bool(False)
-#process.emtfToolsNtupleMaker.TrackingParticlesEnabled = cms.bool(False)
-#process.emtfToolsNtupleMaker.EMTFP2SimInfoEnabled = cms.bool(False)
-### Config for reproducing ME0 (Doens't work)
-# process.load('RecoLocalMuon.GEMSegment.me0Segments_cfi')
-# process.load('L1Trigger.L1TGEM.me0TriggerConvertedPseudoDigis_cfi')
-# process.me0TriggerConvertedPseudoDigis.info = 3
-# process.me0TriggerConvertedPseudoDigis.ME0SegmentProducer = cms.InputTag("me0Segments")
-# process.ME0L1_step = cms.Path(process.me0TriggerConvertedPseudoDigis)
-# process.ME0Segment_step = cms.Path(process.me0Segments)
-# process.schedule.extend([process.ME0Segment_step, process.ME0L1_step])
-# process.schedule.extend([process.ME0L1_step])
-
-
+process.gemRecHits.gemDigiLabel = 'simMuonGEMDigis'
 # Add early deletion of temporary data products to reduce peak memory need
 from Configuration.StandardSequences.earlyDeleteSettings_cff import customiseEarlyDelete
 process = customiseEarlyDelete(process)
 # End adding early deletion
-

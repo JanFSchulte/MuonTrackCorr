@@ -2,28 +2,21 @@
 
 ## Install instructions
 
-From the [PhaseII L1 twiki](https://twiki.cern.ch/twiki/bin/view/CMSPublic/SWGuideL1TPhase2Instructions)
+From the [PhaseII L1 twiki](https://twiki.cern.ch/twiki/bin/view/CMSPublic/SWGuideL1TPhase2Instructions), modified with Osvaldo's PR for the EMTF emulator 
 
 ```
-cmsrel CMSSW_12_5_2_patch1
-cd CMSSW_12_5_2_patch1/src
+cmsrel cmsrel CMSSW_13_3_0_pre3
+cd cmsrel CMSSW_13_3_0_pre3/src
 cmsenv
 git cms-init
-git cms-checkout-topic -u cms-l1t-offline:phase2-l1t-integration-1252patch1
-scram b -j 8
-
-git cms-addpkg  L1Trigger/TrackTrigger
-git cms-addpkg SimTracker/TrackTriggerAssociation
-
-#latest EMTF++ data formats from development repositories
-git clone https://gitlab.com/rice-acosta-group/emtfpp/l1triggerl1muonendcapphase2 L1Trigger/L1TMuonEndCapPhase2/
-rm -r DataFormats/L1TMuonPhase2
-git clone https://gitlab.com/rice-acosta-group/emtfpp/dataformatsl1tmuonphase2 DataFormats/L1TMuonPhase2
-
+git cms-merge-topic -u 43766
+# get model files for the EMTF emulator
+git clone git clone https://github.com/JanFSchulte/Tau3MuEventGeneration
+cp -r Tau3MuEventGeneration/models/data L1Trigger/L1TMuonEndCapPhase2/
 # and finally this code
 git clone https://github.com/JanFSchulte/MuonTrackCorr.git
+scram b -j 8
 
-scram b -j8
 ```
 
 ## Run the Ntuplizer

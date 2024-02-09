@@ -1,10 +1,10 @@
 #ifndef PRINTMUONS_H
 #define PRINTMUONS_H
 
-#include "FWCore/Framework/interface/EDAnalyzer.h"
+#include "FWCore/Framework/interface/ConsumesCollector.h"
+#include "FWCore/Framework/interface/one/EDAnalyzer.h"
 #include "FWCore/Utilities/interface/InputTag.h"
 #include "FWCore/Framework/interface/Frameworkfwd.h"
-#include "FWCore/Framework/interface/EDProducer.h"
 #include "FWCore/Framework/interface/Event.h"
 #include "FWCore/Framework/interface/MakerMacros.h"
 #include "FWCore/Framework/interface/ESHandle.h"
@@ -32,7 +32,7 @@ using namespace l1t;
 using namespace reco;
 
 
-class PrintMuons : public edm::EDAnalyzer {
+class PrintMuons : public edm::one::EDAnalyzer<edm::one::SharedResources>{
     public:
         explicit PrintMuons(const edm::ParameterSet&);
         virtual ~PrintMuons(){};
